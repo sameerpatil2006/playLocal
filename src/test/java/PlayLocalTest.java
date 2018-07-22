@@ -3,22 +3,31 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 
-public class PlayLocal {
+public class PlayLocalTest {
 
-    public static void main(String args []) throws InterruptedException {
+    public static void main(String args []) throws Exception {
 
+        WebDriver driver;
+        /*DesiredCapabilities cap = DesiredCapabilities.chrome();
+        driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),cap);
+        */
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\Sameer\\IdeaProjects\\playLocal\\chromedriver.exe");
-        WebDriver driver = new ChromeDriver();
+        driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.get("https://www.playlocal.com/");
 
-        Date sysDate = new Date();
-        int abc = sysDate.getDate();
-        int dateToSelect = abc + 14;
-        System.out.println(abc);
+        DateFormat dateFormat = new SimpleDateFormat("dd");
+
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, 14);
+        String formattedDate = dateFormat.format(c.getTime());
+        String finalDate = formattedDate.replaceFirst("^0+(?!$)", "");
+        System.out.println(dateFormat.format(c.getTime()));
 
         WebElement signOn = driver.findElement(By.linkText("Sign in"));
         signOn.click();
@@ -37,7 +46,11 @@ public class PlayLocal {
         WebElement date = driver.findElement(By.id("search_friendly_date"));
         date.click();
 
-        WebElement datePicker = driver.findElement(By.linkText(String.valueOf(dateToSelect)));
+        WebElement nextMonth = driver.findElement(By.className("ui-datepicker-next") );
+        if( nextMonth.isDisplayed() ){
+            nextMonth.click();
+        }
+        WebElement datePicker = driver.findElement(By.linkText(String.valueOf(finalDate)));
         datePicker.click();
 
         WebElement findCourts = driver.findElement(By.xpath("/html/body/div[1]/section/section[1]/article/div/div[1]/div[2]/form/input[4]"));
@@ -49,6 +62,9 @@ public class PlayLocal {
         WebElement reserve = driver.findElement(By.linkText("Reserve"));
         reserve.click();
 
+        /*WebElement courtNo = driver.findElement(By.xpath("//*[@id=\"new_reservation\"]/section/section[1]/span/h4/span[1]/text()"));
+        System.out.println(courtNo.getText());
+*/
         WebElement acceptTerms = driver.findElement(By.id("reservation_accepted_terms_of_service"));
         acceptTerms.click();
 
@@ -60,4 +76,5 @@ public class PlayLocal {
 
         driver.close();
     }
+
 }
